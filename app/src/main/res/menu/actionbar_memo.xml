@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_checklist"
+        android:icon="@drawable/checklist"
+        android:title="checkList"
+        android:visible="true"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/plus"
+        android:title="add"
+        android:visible="true"
+        app:showAsAction="always" />
+
+</menu>

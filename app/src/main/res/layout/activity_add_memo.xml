@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".AddMemoActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/MemoTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="제목을 입력하세요"
+            android:inputType="textPersonName"
+            android:singleLine="true"
+            android:layout_weight="5" />
+
+        <ImageButton
+            android:id="@+id/saveBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#00FFFFFF"
+            android:onClick="OnClick"
+            android:padding="10dp"
+            android:src="@drawable/save" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/MemoDocument"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:ems="10"
+        android:hint="내용을 입력하세요"
+        android:singleLine="false"
+        android:gravity="top"
+        android:inputType="textLongMessage" />
+</LinearLayout>
