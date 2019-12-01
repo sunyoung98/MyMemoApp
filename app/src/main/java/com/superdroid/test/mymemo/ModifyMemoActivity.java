@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -16,31 +15,29 @@ import android.widget.Toast;
 
 import java.util.Date;
 
-public class AddMemoActivity extends AppCompatActivity {
+public class ModifyMemoActivity extends AppCompatActivity {
     private EditText MemoTitle, MemoDocument;
     private final String dbName = "MyMemoDB";
     private final String checkListTableName= "CheckList";
     private final String MemoTableName="Memo";
     private boolean TitleErrorCheck=false;
+    private String originTitle="";
     SQLiteDatabase sampleDB = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_memo);
-        ActionBar actionBar= getSupportActionBar();
+        ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        sampleDB=this.openOrCreateDatabase(dbName,MODE_PRIVATE,null);
+        Intent intent= getIntent();
+        String title=intent.getStringExtra("title");
+        originTitle=title;
+        String doc=intent.getStringExtra("doc");
+        MemoTitle = (EditText) findViewById(R.id.MemoTitle);
+        MemoDocument = (EditText) findViewById(R.id.MemoDocument);
+        MemoTitle.setText(title);
+        MemoDocument.setText(doc);
         TitleErrorCheck=false;
-        try{
-            sampleDB=this.openOrCreateDatabase(dbName,MODE_PRIVATE,null);
-            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " + checkListTableName
-                    + " (done VARCHAR(20), title VARCHAR(100), date VARCHAR(20),PRIMARY KEY(title));");
-            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " + MemoTableName
-                    + " (date VARCHAR(20), title VARCHAR(100), document VARCHAR(2000),PRIMARY KEY(title) );");
-        }catch(SQLiteException se){
-                Toast.makeText(getApplicationContext(),  se.getMessage(), Toast.LENGTH_LONG).show();
-            Log.e("", se.getMessage());
-        }
     }
     private long time= 0;
     @Override
@@ -61,17 +58,18 @@ public class AddMemoActivity extends AppCompatActivity {
         int id= v.getId();
         if(id==R.id.saveBtn) {
             long now = System.currentTimeMillis();
-            MemoTitle = (EditText) findViewById(R.id.MemoTitle);
-            MemoDocument = (EditText) findViewById(R.id.MemoDocument);
             if (!(MemoTitle.getText().toString().equals("")) && !(MemoDocument.getText().toString().equals(""))) {
                 MemoData memoData = new MemoData(new Date(now), MemoTitle.getText().toString(), MemoDocument.getText().toString());
                 try {
+                    sampleDB=this.openOrCreateDatabase(dbName,MODE_PRIVATE,null);
+                    sampleDB.execSQL("DELETE FROM "+MemoTableName+" WHERE title = '"+originTitle+"'");
                     sampleDB.execSQL("INSERT INTO " + MemoTableName + " (date, title, document) Values ('" + memoData.getDate() + "','" + memoData.getTitle() +
                             "','" + memoData.getDocument() + "');");
                 } catch (SQLiteException se) {
                     if (se.getMessage().toString().contains("UNIQUE"))
                         TitleErrorCheck = true;
                 }
+                sampleDB.close();
                 if (!TitleErrorCheck) {
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);

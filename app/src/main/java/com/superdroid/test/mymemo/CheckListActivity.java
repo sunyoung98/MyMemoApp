@@ -1,5 +1,6 @@
 package com.superdroid.test.mymemo;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,9 +9,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +44,7 @@ public class CheckListActivity extends AppCompatActivity {
     ListAdapter adapter;
     ListView listview;
     private boolean TitleErrorCheck=false;
+    private boolean changed=false;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar_check, menu) ;
@@ -86,53 +92,75 @@ public class CheckListActivity extends AppCompatActivity {
         }
 
     }
-    protected void showList(){
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    protected void deleteCheckList(String title){
         try{
-            SQLiteDatabase ReadDB = this.openOrCreateDatabase(dbName,MODE_PRIVATE,null);
-            Cursor c= ReadDB.rawQuery("SELECT * FROM "+checkListTableName,null);
-            if(c != null){
-                if(c.moveToFirst()){
-                    do{
+            sampleDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
+            sampleDB.execSQL("DELETE FROM "+checkListTableName+" WHERE title = '"+title+"'");
+        }catch(SQLiteException se){
+            Toast.makeText(getApplicationContext(), se.getMessage().toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void showList() {
+        try {
+            SQLiteDatabase ReadDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
+            Cursor c = ReadDB.rawQuery("SELECT * FROM " + checkListTableName, null);
+            if (c != null) {
+                if (c.moveToFirst()) {
+                    do {
                         String done = c.getString(c.getColumnIndex("done"));
                         String title = c.getString(c.getColumnIndex("title"));
                         String date = c.getString(c.getColumnIndex("date"));
-                        HashMap<String, String> c1= new HashMap<>();
-                        c1.put("done",done);
+                        HashMap<String, String> c1 = new HashMap<>();
+                        c1.put("done", done);
                         c1.put("title", title);
                         checkLists.add(c1);
-                    }while(c.moveToNext());
+                    } while (c.moveToNext());
                 }
             }
             ReadDB.close();
             adapter = new SimpleAdapter(this, checkLists, R.layout.checklist_list_item,
-                    new String[]{"done","title"},
-                    new int[]{R.id.checkListIsDone, R.id.checkListTitle}){
+                    new String[]{"done", "title"},
+                    new int[]{R.id.checkListIsDone, R.id.checkListTitle}) {
                 @Override
-                public View getView (int position, View convertView, ViewGroup parent)
-                {
+                public View getView(int position, View convertView, ViewGroup parent) {
                     View v = super.getView(position, convertView, parent);
-                    final Button clickedBtn=(Button)v.findViewById(R.id.checkListIsDone);
-                    final TextView clickedtextView=(TextView)v.findViewById(R.id.checkListTitle);
+                    final Button clickedBtn = (Button) v.findViewById(R.id.checkListIsDone);
+                    final Button clickedtitle = (Button) v.findViewById(R.id.checkListTitle);
                     clickedBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if(clickedBtn.getText().toString().equals("미완료")) {
+                            if (clickedBtn.getText().toString().equals("미완료")) {
                                 clickedBtn.setText("완료");
-                                updateDatabase(clickedtextView.getText().toString(), clickedBtn.getText().toString());
-                            }
-                            else if(clickedBtn.getText().toString().equals("완료")) {
+                                updateDatabase(clickedtitle.getText().toString(), clickedBtn.getText().toString());
+                            } else if (clickedBtn.getText().toString().equals("완료")) {
                                 clickedBtn.setText("미완료");
-                                updateDatabase(clickedtextView.getText().toString(), clickedBtn.getText().toString());
+                                updateDatabase(clickedtitle.getText().toString(), clickedBtn.getText().toString());
                             }
 
+                        }
+                    });
+                    clickedtitle.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            Intent intent= new Intent(getApplicationContext(), PopupCheckListActivity.class);
+                            intent.putExtra("title",clickedtitle.getText().toString());
+                            startActivityForResult(intent,1);
+                            return true;
                         }
                     });
                     return v;
                 }
             };
             listview.setAdapter(adapter);
-        } catch(SQLiteException se){
-            Toast.makeText(getApplicationContext(),se.getMessage(),Toast.LENGTH_SHORT).show();
+        } catch (SQLiteException se) {
+            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
     private long time= 0;
@@ -146,9 +174,9 @@ public class CheckListActivity extends AppCompatActivity {
         }
     }
 
-    public void addCheckList(View v){
+    protected void addCheckList(View v){
         checkListTitle=findViewById(R.id.checkListTitle);
-        if(checkListTitle.getText().toString()!=""){
+        if(!checkListTitle.getText().toString().equals("")){
             CheckList checkList=new CheckList(checkListTitle.getText().toString(), new Date(System.currentTimeMillis()));
             try{
                 sampleDB.execSQL("INSERT INTO "+checkListTableName+" (done, title, date) Values ('"+checkList.isDone()+"','"+checkList.getTitle()+
@@ -165,6 +193,9 @@ public class CheckListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"제목이 중복됩니다. 다른 제목으로 선택하세요",Toast.LENGTH_SHORT).show();
                 TitleErrorCheck=false;
             }
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "내용을 입력해주세요.", Toast.LENGTH_SHORT).show();
         }
     }
 }

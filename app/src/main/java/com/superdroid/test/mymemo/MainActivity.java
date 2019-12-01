@@ -13,10 +13,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         showList();
 
     }
-    public String returnIndex(String titletemp){
+    protected String returnIndex(String titletemp){
         for(int i=0; i<Lists.size(); i++){
             HashMap<String,String> hashMap = Lists.get(i);
             if(hashMap.get("title")==titletemp)
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return "";
     }
-    public void TitleClick(View v){
+    protected void TitleClick(View v){
         Button btn=(Button)v;
         String titletemp=btn.getText().toString();
         String doctemp=returnIndex(titletemp);
@@ -113,7 +115,25 @@ public class MainActivity extends AppCompatActivity {
             ReadDB.close();
             adapter = new SimpleAdapter(this, Lists, R.layout.memo_list_item,
                     new String[]{"title","doc"},
-                    new int[]{R.id.listMemoTitle, R.id.listMemoTitle2});
+                    new int[]{R.id.listMemoTitle, R.id.listMemoTitle2}){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                final Button clickedBtn = (Button) v.findViewById(R.id.listMemoTitle);
+                final TextView document=(TextView)v.findViewById(R.id.listMemoTitle2);
+                clickedBtn.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Intent intent= new Intent(getApplicationContext(), DialogMemo.class);
+                        intent.putExtra("title",clickedBtn.getText().toString());
+                        intent.putExtra("doc",document.getText().toString());
+                        startActivityForResult(intent,1);
+                        return true;
+                    }
+                });
+                return v;
+            }
+        };
             listview.setAdapter(adapter);
         } catch(SQLiteException se){
             Toast.makeText(getApplicationContext(),se.getMessage(),Toast.LENGTH_SHORT).show();

@@ -7,11 +7,12 @@
     android:paddingLeft="10dp"
     android:paddingRight="10dp" >
 
-    <TextView
+    <Button
         android:id="@+id/checkListTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="3" />
+        android:layout_weight="3"
+        android:background="#00FFFFFF" />
 
 
     <Button

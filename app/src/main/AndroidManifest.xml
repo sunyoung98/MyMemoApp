@@ -9,7 +9,16 @@
         android:roundIcon="@drawable/pencil"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ReadMemoActivity"></activity>
+        <activity android:name=".DialogMemo"
+            android:theme="@android:style/Theme.Holo.Dialog"/>
+        <activity
+            android:name=".DialogModifyCheckList"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity
+            android:name=".PopupCheckListActivity"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity android:name=".ModifyMemoActivity" />
+        <activity android:name=".ReadMemoActivity" />
         <activity android:name=".AddMemoActivity" />
         <activity android:name=".CheckListActivity" />
         <activity android:name=".MainActivity">

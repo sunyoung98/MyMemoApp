@@ -2,11 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_memo"
-        android:icon="@drawable/memo"
-        android:title="Memo"
+        android:id="@+id/action_modify"
+        android:visible="true"
+        android:title="modify"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_delete"
+        android:title="delete"
         android:visible="true"
         app:showAsAction="always" />
-
 
 </menu>
