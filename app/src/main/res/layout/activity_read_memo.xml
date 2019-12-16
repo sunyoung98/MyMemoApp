@@ -16,13 +16,19 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="제목 : " />
+            android:background="@drawable/edge"
+            android:text="제목 : "
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/MemoTitle"
-            android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:background="@drawable/edge"
+            android:layout_height="match_parent"
             android:text="TextView"
+            android:textSize="20sp"
             tools:layout_editor_absoluteX="5dp"
             tools:layout_editor_absoluteY="16dp" />
 
@@ -37,19 +43,26 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="날짜 : " />
+            android:background="@drawable/edge"
+            android:text="날짜 : "
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/MemoTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:background="@drawable/edge"
+            android:text="TextView"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/MemoDocument"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="14sp" />
 
 </LinearLayout>
